@@ -35,3 +35,26 @@
 ### Next Steps (Day 4)
 - Bivariate analysis: each feature vs Churn
 - Find which features most strongly predict churn
+
+## Day 4 — Business Insights from EDA
+
+### Top Churn Risk Factors Found
+
+| Factor | Finding | Churn Rate |
+|--------|---------|------------|
+| Contract type | Month-to-month customers | 42.7% |
+| Tenure | New customers (0-12 months) | ~47% |
+| TechSupport | Customers with no support | ~41% |
+| OnlineSecurity | No security subscription | ~41% |
+| MonthlyCharges | Higher charges = more churn | +0.19 corr |
+
+### Key Business Recommendations
+1. Incentivise month-to-month customers to upgrade to annual contracts
+2. Prioritise retention efforts in first 12 months of customer lifecycle
+3. Offer TechSupport and OnlineSecurity bundles to at-risk segments
+4. High monthly charge customers need proactive outreach
+
+### Model Implications
+- Contract, tenure, TechSupport, OnlineSecurity → likely top SHAP features
+- Class imbalance (26.5% churn) → SMOTE needed before XGBoost training
+- TotalCharges and tenure highly correlated → may need to watch multicollinearity
