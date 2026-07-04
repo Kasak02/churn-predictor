@@ -121,3 +121,44 @@ Columns kept as text for OneHotEncoder in Week 2:
 - Create chargePerMonth: TotalCharges / (tenure + 1)
 - Create tenureBucket : group tenure into 4 buckets (New/Growing/Mature/Loyal)
 - Save final feature-engineered dataset
+
+# Day 6 — Feature Engineering Notes
+
+## New Features Created
+
+### 1. numServices
+- Formula : Sum of 8 service columns (PhoneService, MultipleLines,
+            OnlineSecurity, OnlineBackup, DeviceProtection,
+            TechSupport, StreamingTV, StreamingMovies)
+- Range   : 0 to 8
+- Insight : Customers with 0 services churn at ~65%
+            Customers with 8 services churn at ~8%
+- Why     : More services = more platform investment = lower churn
+
+### 2. chargePerMonth
+- Formula : TotalCharges / (tenure + 1)
+- Why +1  : Avoids division by zero for tenure=0 customers
+- Insight : Captures normalised spend rate over customer lifetime
+- Why     : Different from MonthlyCharges — reflects spend trajectory
+
+### 3. tenureBucket
+- Formula : pd.cut(tenure, bins=[0,12,24,48,72])
+- Labels  : New(0-12m), Growing(12-24m), Mature(24-48m), Loyal(48-72m)
+- Insight :
+    New     → 47% churn rate (highest risk)
+    Growing → 35% churn rate
+    Mature  → 20% churn rate
+    Loyal   →  8% churn rate (lowest risk)
+- Why     : Captures non-linear relationship between tenure and churn
+
+### 4. contractRisk
+- Formula : Month-to-month=3, One year=2, Two year=1
+- Insight : Ordinal encoding of contract risk level
+- Why     : Preserves order (month-to-month > one year > two year risk)
+
+## Files Saved
+- data/processed/telco_churn_features.csv  ← used for ML training in Week 2
+
+## Week 1 Complete!
+All EDA, cleaning, and feature engineering is done.
+Week 2 starts with sklearn pipeline + XGBoost training.
