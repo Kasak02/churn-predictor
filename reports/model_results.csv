@@ -1,0 +1,2 @@
+Model,Accuracy,F1_Churn,F1_Weighted,ROC_AUC,TP,FN,FP,TN
+Logistic Regression,73.95,0.6157,0.7533,0.8458,294,80,287,748
