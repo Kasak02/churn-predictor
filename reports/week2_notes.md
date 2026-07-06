@@ -218,3 +218,48 @@ SHAP mathematically confirms what EDA showed visually:
 - Force plot for high-risk customer
 - Per-customer explanation function
 - Connect SHAP features to LangChain email (Week 3 prep)
+
+# Week 2 Day 6 — SHAP Waterfall + Per-Customer Explanations
+
+## What was built today
+
+### 3 Waterfall Plots
+Each waterfall plot shows for one customer:
+- Base value    : average model prediction across all customers
+- Each bar      : one feature's contribution (red=toward churn,
+                  blue=away from churn)
+- Final value   : the actual churn probability for this customer
+
+### 3 Customer Types Explained
+| Type       | Churn Prob | Why Interesting |
+|------------|------------|-----------------|
+| High risk  | >80%       | Clear churn drivers visible |
+| Low risk   | <20%       | Clear retention factors visible |
+| Borderline | ~50%       | Competing factors visible |
+
+### SHAP Dependence Plots
+- Shows how top 2 features relate to churn across all customers
+- Confirms direction of each feature's impact
+
+### explain_customer() Function
+- Reusable function built for Streamlit + LangChain
+- Input  : customer index
+- Output : churn probability, risk level, top 5 SHAP features
+- Saved  : src/shap_utils.py
+
+## Connection to Week 3
+explain_customer() feeds directly into:
+1. Streamlit Tab 2 (SHAP explanation per customer)
+2. LangChain email generator (uses top features as context)
+
+## Files Saved
+- reports/shap_waterfall_highrisk.png
+- reports/shap_waterfall_lowrisk.png
+- reports/shap_waterfall_borderline.png
+- reports/shap_dependence_plots.png
+- src/shap_utils.py
+
+## Tomorrow — Week 2 Day 7 (Sunday)
+- Write model card (what the model does, metrics, limitations)
+- Commit ALL Week 2 work cleanly to GitHub
+- Prepare for Week 3 (Streamlit app starts Monday)
