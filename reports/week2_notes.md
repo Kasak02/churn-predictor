@@ -167,3 +167,54 @@ SMOTE should break this pattern tomorrow.
 - Retrain XGBoost on balanced data
 - Target: precision > 0.60 while keeping recall > 0.75
 - Select and save the single best final model
+
+# Week 2 Day 5 — SHAP Global Explainability
+
+## What is SHAP
+- SHapley Additive exPlanations
+- Assigns each feature a contribution value per prediction
+- Based on game theory (Shapley values)
+- TreeExplainer: optimised for XGBoost/tree models
+
+## SHAP Explainer Setup
+- Explainer type : TreeExplainer
+- Model          : XGBoost + SMOTE (final_model.pkl)
+- Samples        : 1409 test customers
+- Features       : 33 features
+
+## Top 5 Global Churn Drivers
+| Rank | Feature | Mean SHAP |
+|------|---------|-----------|
+| 1    | contractRisk              | 0.6455    |
+| 2    | tenure                    | 0.3401    |
+| 3    | InternetService_Fiber optic | 0.2693    |
+| 4    | PaymentMethod_Electronic check | 0.2091    |
+| 5    | PaperlessBilling          | 0.1738    |
+
+## Key Insights from Beeswarm Plot
+- contractRisk: Strongest single predictor of churn
+- tenure: Low values strongly predict churn
+- InternetService_Fiber optic: High values push toward churn risk
+
+## Two SHAP Visualizations Created
+1. Bar chart    : Mean absolute SHAP — feature ranking
+2. Beeswarm     : Direction + magnitude per customer
+
+## Connection to EDA (Week 1)
+SHAP mathematically confirms what EDA showed visually:
+- Contract type was top finding in Day 4 EDA → confirmed #1 SHAP
+- Tenure was strongest correlation (-0.35) → confirmed top SHAP
+- numServices predicted churn → confirmed in SHAP ranking
+
+## Files Saved
+- models/shap_values.npy
+- models/shap_explainer.pkl
+- reports/shap_global_importance.png
+- reports/shap_summary_beeswarm.png
+- reports/shap_feature_importance.csv
+
+## Tomorrow — Week 2 Day 6
+- SHAP waterfall plot per individual customer
+- Force plot for high-risk customer
+- Per-customer explanation function
+- Connect SHAP features to LangChain email (Week 3 prep)

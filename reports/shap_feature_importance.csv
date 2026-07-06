@@ -1,0 +1,34 @@
+Feature,Mean_SHAP
+contractRisk,0.6454648
+tenure,0.34013715
+InternetService_Fiber optic,0.26927114
+PaymentMethod_Electronic check,0.20913434
+PaperlessBilling,0.1737714
+OnlineSecurity,0.11621866
+InternetService_No,0.111505836
+Dependents,0.10567659
+StreamingMovies,0.10133587
+TechSupport,0.085682414
+OnlineBackup,0.056850426
+MonthlyCharges,0.035475098
+StreamingTV,0.035050407
+Partner,0.03106269
+MultipleLines,0.031053213
+tenureBucket_New,0.020009264
+Contract_One year,0.011473313
+SeniorCitizen,0.007749647
+chargePerMonth,0.006102313
+PaymentMethod_Credit card (automatic),0.004575302
+PaymentMethod_Bank transfer (automatic),0.0
+Contract_Month-to-month,0.0
+TotalCharges,0.0
+numServices,0.0
+InternetService_DSL,0.0
+tenureBucket_Growing,0.0
+PaymentMethod_Mailed check,0.0
+Contract_Two year,0.0
+gender,0.0
+PhoneService,0.0
+tenureBucket_Loyal,0.0
+tenureBucket_Mature,0.0
+DeviceProtection,0.0
