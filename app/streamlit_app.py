@@ -19,47 +19,95 @@ matplotlib.use('Agg')
 # ── Page config — must be FIRST ──────────────────────────────────────────────
 st.set_page_config(
     page_title            = "SaaS Churn Predictor",
-    page_icon             = "📊",
+    page_icon             = "🤖",
     layout                = "wide",
     initial_sidebar_state = "expanded"
 )
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# ── Custom CSS ────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+
 .main-header {
-    font-size: 2.2rem; font-weight: 700;
-    color: #534AB7; margin-bottom: 0;
+    font-size: 2rem; font-weight: 700;
+    background: linear-gradient(135deg, #534AB7 0%, #7C3AED 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 0;
 }
 .sub-header {
-    font-size: 1rem; color: #5F5E5A;
-    margin-top: 0; margin-bottom: 1.5rem;
+    font-size: 0.95rem; color: #6B7280;
+    margin-top: 0; margin-bottom: 1.5rem; font-weight: 400;
 }
-.risk-high   { color: #E05A2B; font-weight: 700; }
-.risk-medium { color: #F0934A; font-weight: 700; }
-.risk-low    { color: #0F6E56; font-weight: 700; }
 .stTabs [data-baseweb="tab"] {
-    background-color: #F1EFE8;
+    background: transparent;
     border-radius: 8px 8px 0 0;
-    padding: 8px 20px;
+    padding: 10px 24px;
     font-weight: 500;
+    font-size: 0.9rem;
+    color: #6B7280;
+    border: none;
 }
 .stTabs [aria-selected="true"] {
-    background-color: #EEEDFE !important;
-    color: #534AB7 !important;
+    background: linear-gradient(135deg, #534AB7, #7C3AED) !important;
+    color: white !important;
+    border-radius: 8px 8px 0 0;
 }
 div[data-testid="metric-container"] {
-    background-color: #F8F7F4;
-    border: 0.5px solid #D3D1C7;
-    border-radius: 10px;
-    padding: 12px;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    border: 1px solid #4338ca;
+    border-radius: 12px;
+    padding: 16px;
+    color: white;
 }
+div[data-testid="metric-container"] label {
+    color: #a5b4fc !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+div[data-testid="metric-container"] [data-testid="stMetricValue"] {
+    color: white !important;
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+}
+div[data-testid="metric-container"] [data-testid="stMetricDelta"] {
+    color: #86efac !important;
+}
+.stDataFrame { border-radius: 10px; overflow: hidden; }
+.stButton > button {
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #0f0c29 0%, #1a1750 50%, #24243e 100%);
+}
+[data-testid="stSidebar"] * { color: #e0e7ff !important; }
+[data-testid="stSidebar"] hr { border-color: #4338ca !important; }
 </style>
 """, unsafe_allow_html=True)
 
-
+# ── Global Plotly theme ───────────────────────────────────────────────────────
+CHART_THEME = {
+    'plot_bgcolor' : 'rgba(0,0,0,0)',
+    'paper_bgcolor': 'rgba(0,0,0,0)',
+    'font'         : {'family': 'Inter, sans-serif', 'color': '#e0e7ff'},
+    'title_font'   : {'size': 14, 'color': '#e0e7ff', 'family': 'Inter'},
+    'height'       : 360,
+}
+COLORS = {
+    'primary'  : '#7C3AED',
+    'secondary': '#4F46E5',
+    'high'     : '#EF4444',
+    'medium'   : '#F59E0B',
+    'low'      : '#10B981',
+    'neutral'  : '#6B7280',
+}
 # ══════════════════════════════════════════════════════════════════════════════
 # CACHED LOADERS
 # ══════════════════════════════════════════════════════════════════════════════
@@ -320,7 +368,7 @@ m = load_metrics()
 # SIDEBAR
 # ══════════════════════════════════════════════════════════════════════════════
 with st.sidebar:
-    st.markdown("## 📊 Churn Predictor")
+    st.markdown("## 🤖 Churn Predictor")
     st.markdown("*AI-powered customer retention*")
     st.divider()
 
@@ -354,19 +402,21 @@ with st.sidebar:
     st.markdown("### Tech Stack")
     st.markdown("`XGBoost` `SHAP` `Streamlit`\n`Plotly` `Groq API` `Llama 3.3`\n`pandas` `scikit-learn`")
     st.divider()
-    st.markdown("Built by **Kasak** · VIPS-TC")
+    st.markdown("Built by **Kasak Bhatia**")
     st.markdown("[GitHub ↗](https://github.com/Kasak02/churn-predictor)")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # MAIN HEADER
 # ══════════════════════════════════════════════════════════════════════════════
-st.markdown('<p class="main-header">📊 SaaS Customer Churn Predictor</p>',
+st.markdown('<p class="main-header">SaaS Customer Churn Predictor</p>',
             unsafe_allow_html=True)
 st.markdown(
     '<p class="sub-header">'
-    'Predict churn · Explain predictions with SHAP · '
-    'Generate AI retention emails · Explore analytics'
+    '🔮 Predict churn risk &nbsp;·&nbsp; '
+    '🔍 Explain with SHAP &nbsp;·&nbsp; '
+    '📧 Generate retention emails &nbsp;·&nbsp; '
+    '📈 Live analytics'
     '</p>',
     unsafe_allow_html=True
 )
@@ -546,18 +596,18 @@ with tab1:
         fig_risk = go.Figure(go.Bar(
             x            = ['🔴 High Risk', '🟡 Medium Risk', '🟢 Low Risk'],
             y            = [n_high, n_medium, n_low],
-            marker_color = ['#E05A2B', '#F0934A', '#0F6E56'],
+            marker_color = [COLORS['high'], COLORS['medium'], COLORS['low']],
             text         = [n_high, n_medium, n_low],
             textposition = 'outside'
         ))
-        fig_risk.update_layout(
-            title       = 'Customer Risk Distribution',
-            xaxis_title = 'Risk Level',
-            yaxis_title = 'Number of Customers',
-            height      = 350,
-            showlegend  = False,
-            plot_bgcolor  = 'rgba(0,0,0,0)',
-            paper_bgcolor = 'rgba(0,0,0,0)'
+        fig_risk.update_layout( **CHART_THEME
+            # title       = 'Customer Risk Distribution',
+            # xaxis_title = 'Risk Level',
+            # yaxis_title = 'Number of Customers',
+            # height      = 350,
+            # showlegend  = False,
+            # plot_bgcolor  = 'rgba(0,0,0,0)',
+            # paper_bgcolor = 'rgba(0,0,0,0)'
         )
         st.plotly_chart(fig_risk, use_container_width=True)
 
@@ -573,10 +623,10 @@ with tab1:
                            annotation_text='Decision threshold (50%)')
         fig_hist.add_vline(x=70, line_dash='dot',  line_color='#F0934A',
                            annotation_text='High risk (70%)')
-        fig_hist.update_layout(
-            height        = 350,
-            plot_bgcolor  = 'rgba(0,0,0,0)',
-            paper_bgcolor = 'rgba(0,0,0,0)'
+        fig_hist.update_layout( **CHART_THEME
+            # height        = 350,
+            # plot_bgcolor  = 'rgba(0,0,0,0)',
+            # paper_bgcolor = 'rgba(0,0,0,0)'
         )
         st.plotly_chart(fig_hist, use_container_width=True)
 
@@ -1109,9 +1159,11 @@ with tab4:
             )
             fig_pie.update_traces(textposition='inside',
                                    textinfo='percent+label')
-            fig_pie.update_layout(height=350,
-                                   plot_bgcolor='rgba(0,0,0,0)',
-                                   paper_bgcolor='rgba(0,0,0,0)')
+            fig_pie.update_layout(**CHART_THEME
+                                #    height=350,
+                                #    plot_bgcolor='rgba(0,0,0,0)',
+                                #    paper_bgcolor='rgba(0,0,0,0)'
+                                   )
             st.plotly_chart(fig_pie, use_container_width=True)
 
         with col2:
@@ -1140,10 +1192,10 @@ with tab4:
                 line_color='gray',
                 annotation_text=f'Avg {churn_pct}%'
             )
-            fig_contract.update_layout(
-                height=350, showlegend=False,
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)'
+            fig_contract.update_layout(**CHART_THEME
+                # height=350, showlegend=False,
+                # plot_bgcolor='rgba(0,0,0,0)',
+                # paper_bgcolor='rgba(0,0,0,0)'
             )
             st.plotly_chart(fig_contract, use_container_width=True)
 
@@ -1163,10 +1215,10 @@ with tab4:
                 labels = {'Churn': 'Churned', 'tenure': 'Tenure (months)'}
             )
             fig_tenure.update_traces(opacity=0.7)
-            fig_tenure.update_layout(
-                height=350,
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)'
+            fig_tenure.update_layout( **CHART_THEME
+                # height=350,
+                # plot_bgcolor='rgba(0,0,0,0)',
+                # paper_bgcolor='rgba(0,0,0,0)'
             )
             st.plotly_chart(fig_tenure, use_container_width=True)
 
@@ -1186,10 +1238,10 @@ with tab4:
                     'Churned': '#E05A2B', 'Retained': '#534AB7'
                 }
             )
-            fig_charges.update_layout(
-                height=350, showlegend=False,
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)'
+            fig_charges.update_layout(**CHART_THEME
+                # height=350, showlegend=False,
+                # plot_bgcolor='rgba(0,0,0,0)',
+                # paper_bgcolor='rgba(0,0,0,0)'
             )
             st.plotly_chart(fig_charges, use_container_width=True)
 
@@ -1214,10 +1266,10 @@ with tab4:
             fig_svc.update_traces(
                 texttemplate='%{text:.1f}%', textposition='outside'
             )
-            fig_svc.update_layout(
-                height=350, showlegend=False,
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)'
+            fig_svc.update_layout( **CHART_THEME
+                # height=350, showlegend=False,
+                # plot_bgcolor='rgba(0,0,0,0)',
+                # paper_bgcolor='rgba(0,0,0,0)'
             )
             st.plotly_chart(fig_svc, use_container_width=True)
 
@@ -1247,10 +1299,10 @@ with tab4:
                     texttemplate='%{text:.1f}%',
                     textposition='outside'
                 )
-                fig_bucket.update_layout(
-                    height=350, showlegend=False,
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    paper_bgcolor='rgba(0,0,0,0)'
+                fig_bucket.update_layout(**CHART_THEME
+                    # height=350, showlegend=False,
+                    # plot_bgcolor='rgba(0,0,0,0)',
+                    # paper_bgcolor='rgba(0,0,0,0)'
                 )
                 st.plotly_chart(fig_bucket, use_container_width=True)
 
@@ -1263,13 +1315,13 @@ with tab4:
             y          = ['F1_Churn', 'F1_Weighted', 'ROC_AUC'],
             barmode    = 'group',
             title      = 'All Models — Key Metrics Comparison',
-            color_discrete_sequence = ['#E05A2B', '#534AB7', '#0F6E56'],
+            color_discrete_sequence = [COLORS['high'], COLORS['primary'], COLORS['low']],
             labels     = {'value': 'Score', 'variable': 'Metric'}
         )
-        fig_models.update_layout(
-            height=400,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
+        fig_models.update_layout( **CHART_THEME
+            # height=400,
+            # plot_bgcolor='rgba(0,0,0,0)',
+            # paper_bgcolor='rgba(0,0,0,0)'
         )
         st.plotly_chart(fig_models, use_container_width=True)
 
@@ -1335,10 +1387,10 @@ with tab4:
                 fig_live_pie.update_traces(
                     textposition='inside', textinfo='percent+label'
                 )
-                fig_live_pie.update_layout(
-                    height=350,
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    paper_bgcolor='rgba(0,0,0,0)'
+                fig_live_pie.update_layout( **CHART_THEME
+                    # height=350,
+                    # plot_bgcolor='rgba(0,0,0,0)',
+                    # paper_bgcolor='rgba(0,0,0,0)'
                 )
                 st.plotly_chart(fig_live_pie, use_container_width=True)
 
@@ -1359,10 +1411,10 @@ with tab4:
                     x=50, line_dash='dot', line_color='#F0934A',
                     annotation_text='Decision threshold'
                 )
-                fig_live_hist.update_layout(
-                    height=350,
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    paper_bgcolor='rgba(0,0,0,0)'
+                fig_live_hist.update_layout( **CHART_THEME
+                    # height=350,
+                    # plot_bgcolor='rgba(0,0,0,0)',
+                    # paper_bgcolor='rgba(0,0,0,0)'
                 )
                 st.plotly_chart(fig_live_hist, use_container_width=True)
 
@@ -1381,10 +1433,10 @@ with tab4:
                         text  = contract_counts.values
                     )
                     fig_ct.update_traces(textposition='outside')
-                    fig_ct.update_layout(
-                        height=350, showlegend=False,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)'
+                    fig_ct.update_layout( **CHART_THEME
+                        # height=350, showlegend=False,
+                        # plot_bgcolor='rgba(0,0,0,0)',
+                        # paper_bgcolor='rgba(0,0,0,0)'
                     )
                     st.plotly_chart(fig_ct, use_container_width=True)
 
@@ -1410,10 +1462,10 @@ with tab4:
                         texttemplate='%{text:.1f}%',
                         textposition='outside'
                     )
-                    fig_avg.update_layout(
-                        height=350, showlegend=False,
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        paper_bgcolor='rgba(0,0,0,0)'
+                    fig_avg.update_layout( **CHART_THEME
+                        # height=350, showlegend=False,
+                        # plot_bgcolor='rgba(0,0,0,0)',
+                        # paper_bgcolor='rgba(0,0,0,0)'
                     )
                     st.plotly_chart(fig_avg, use_container_width=True)
 
