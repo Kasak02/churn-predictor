@@ -314,3 +314,92 @@ def predict_batch(customers: list[CustomerData]):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+# ── POST /explain — SHAP explanation ─────────────────────────────────────────
+@app.post("/explain", response_model=ExplainResponse, tags=["Explanation"])
+def explain(customer: CustomerData):
+    """
+    Returns top 5 SHAP features explaining the churn prediction.
+    Shows which features pushed the score up or down.
+    """
+    try:
+        X_proc = preprocess_customer(customer)
+        prob   = float(model.predict_proba(X_proc)[0][1])
+        risk   = get_risk_level(prob)
+
+        # Compute SHAP values
+        shap_vals = explainer.shap_values(X_proc)[0]
+
+        # Get top 5 features by absolute SHAP value
+        feat_shap = sorted(
+            zip(feature_names, shap_vals),
+            key=lambda x: abs(x[1]),
+            reverse=True
+        )[:5]
+
+        top_features = [
+            {
+                "rank"     : i + 1,
+                "feature"  : feat,
+                "shap_value"   : round(float(val), 4),
+                "direction": "increases churn risk" if val > 0
+                              else "decreases churn risk",
+                "impact"   : "HIGH" if abs(val) > 0.2
+                              else "MEDIUM" if abs(val) > 0.1
+                              else "LOW"
+            }
+            for i, (feat, val) in enumerate(feat_shap)
+        ]
+
+        # Auto-generate summary sentence
+        top_positive = [
+            f['feature'].replace('_', ' ')
+            for f in top_features if f['shap_value'] > 0
+        ][:2]
+
+        summary = (
+            f"This customer has a {prob*100:.1f}% churn probability. "
+            f"Key risk factors: {', '.join(top_positive)}."
+            if top_positive else
+            f"This customer has a {prob*100:.1f}% churn probability "
+            f"with low overall risk."
+        )
+
+        return ExplainResponse(
+            churn_probability = round(prob, 4),
+            risk_level        = risk,
+            top_features      = top_features,
+            summary           = summary
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── GET /explain/global — Global SHAP importance ──────────────────────────────
+@app.get("/explain/global", tags=["Explanation"])
+def explain_global():
+    """
+    Returns global feature importance from SHAP
+    across all training data.
+    """
+    try:
+        import csv
+        with open('reports/shap_feature_importance.csv') as f:
+            reader   = csv.DictReader(f)
+            features = list(reader)
+
+        return {
+            "model"          : "XGBoost + SMOTE",
+            "total_features" : len(features),
+            "top_10_features": [
+                {
+                    "rank"      : i + 1,
+                    "feature"   : row['Feature'],
+                    "mean_shap" : round(float(row['Mean_SHAP']), 4)
+                }
+                for i, row in enumerate(features[:10])
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
