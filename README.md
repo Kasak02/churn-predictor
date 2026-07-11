@@ -136,7 +136,7 @@ Top 5 global churn drivers identified by SHAP TreeExplainer:
 | **Explainability** | SHAP | Per-customer prediction explanations |
 | **LLM** | Groq API · Llama 3.3 70b | Retention email generation |
 | **App** | Streamlit · Plotly | Interactive web application |
-| **API** | FastAPI · uvicorn | REST endpoints (Week 4) |
+| **API** | FastAPI · uvicorn | REST endpoints — [Live API] (https://churn-predictor-api-1re5.onrender.com) |
 | **Deployment** | Streamlit Cloud · Docker · Render.com | Production deployment |
 | **CI/CD** | GitHub Actions | Automated testing and deployment |
 
@@ -208,7 +208,7 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 
 # 4. Add your Groq API key
-echo GROQ_API_KEY=your_key_here > .env
+echo GROQ_API_KEY= your_key_here > .env
 
 # 5. Run the app
 streamlit run app/streamlit_app.py
