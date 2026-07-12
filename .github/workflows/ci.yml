@@ -27,10 +27,10 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          flake8 api/ app/ \
-            --max-line-length=100 \
-            --exclude=__pycache__ \
-            --ignore=E501,W503,E203,E221,E226,E241,E272,E127,W292,E251 \
+          flake8 api/ src/ app/ \
+            --max-line-length=120 \
+            --exclude=__pycache__,venv \
+            --ignore=E501,W503,E127,E221,E203,E226,E241,E272,E251,W292 \
             --count
 
       - name: Run tests
