@@ -23,13 +23,12 @@ def generate_retention_email(churn_prob, risk_level, top_features):
     # Format top SHAP features as readable text
     risk_factors = []
     for f in top_features[:3]:
-        if f['shap_value'] > 0:
+        if f["shap_value"] > 0:
             risk_factors.append(
                 f"{f['feature'].replace('_', ' ')} "
                 f"(SHAP impact: +{f['shap_value']:.3f})"
             )
-    risk_text = ', '.join(risk_factors) if risk_factors \
-                else "low platform engagement"
+    risk_text = ", ".join(risk_factors) if risk_factors else "low platform engagement"
 
     # Build the prompt
     prompt = f"""
@@ -55,12 +54,12 @@ Write the email now:
 """
 
     # Call Groq API directly
-    client   = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     response = client.chat.completions.create(
-        model    = "llama-3.3-70b-versatile",
-        messages = [{"role": "user", "content": prompt}],
-        temperature = 0.7,
-        max_tokens  = 300
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+        max_tokens=300,
     )
 
     return response.choices[0].message.content.strip()
