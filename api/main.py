@@ -109,7 +109,7 @@ class CustomerData(BaseModel):
     StreamingMovies : int   = Field(0, ge=0, le=1)
     PaperlessBilling: int   = Field(0, ge=0, le=1)
 
-    model_Config ={
+    model_config ={
         "json_schema_extra" : {
             "example": {
                 "tenure"          : 3,
