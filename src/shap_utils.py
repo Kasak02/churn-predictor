@@ -1,5 +1,4 @@
 
-import numpy as np
 
 def explain_customer(customer_idx, X_test_proc, shap_values,
                       feature_names, y_pred_prob, explainer,

@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def generate_retention_email(churn_prob, risk_level, top_features):
     """
     Generate personalised retention email using Groq API directly.

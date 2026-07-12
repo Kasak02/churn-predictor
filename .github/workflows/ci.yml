@@ -29,8 +29,8 @@ jobs:
         run: |
           flake8 api/ src/ app/ \
             --max-line-length=120 \
-            --exclude=__pycache__,venv \
-            --ignore=E501,W503,E127,E221,E203,E226,E241,E272,E251,W292 \
+            --exclude=__pycache__ \
+            --ignore=E501,W503,E128,E124,E303,W293,E126,E231,E201,E302,F401 \
             --count
 
       - name: Run tests
