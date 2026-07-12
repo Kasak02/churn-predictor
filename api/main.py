@@ -49,6 +49,12 @@ app.add_middleware(
 # ══════════════════════════════════════════════════════════════════════════════
 # LOAD MODELS — once at startup
 # ══════════════════════════════════════════════════════════════════════════════
+model         = None
+preprocessor  = None
+explainer     = None
+feature_names = []
+model_results = []
+
 try:
     model        = joblib.load('models/final_model.pkl')
     preprocessor = joblib.load('models/preprocessor.pkl')
@@ -59,15 +65,22 @@ try:
 
     with open('reports/model_results.csv') as f:
         import csv
-        reader      = csv.DictReader(f)
+        reader        = csv.DictReader(f)
         model_results = list(reader)
 
     print("✓ All models loaded successfully")
 
 except FileNotFoundError as e:
-    print(f"✗ Model loading failed: {e}")
-    print("Run from project root: uvicorn api.main:app --reload")
+    print(f"⚠ Model files not found: {e}")
+    print("  Tests will run in mock mode")
 
+def check_models_loaded():
+    """Raise error if models not loaded."""
+    if model is None:
+        raise HTTPException(
+            status_code = 503,
+            detail      = "Models not loaded. Run from project root."
+        )
 
 # ══════════════════════════════════════════════════════════════════════════════
 # REQUEST / RESPONSE SCHEMAS
@@ -235,6 +248,7 @@ def model_info():
 # ── POST /predict — Single customer prediction ────────────────────────────────
 @app.post("/predict", response_model=PredictionResponse, tags=["Prediction"])
 def predict(customer: CustomerData):
+    check_models_loaded() 
     """
     Predict churn probability for a single customer.
 
@@ -265,6 +279,7 @@ def predict(customer: CustomerData):
 # ── POST /predict/batch — Multiple customers ──────────────────────────────────
 @app.post("/predict/batch", tags=["Prediction"])
 def predict_batch(customers: list[CustomerData]):
+    check_models_loaded()
     """
     Predict churn for multiple customers at once.
 
@@ -318,6 +333,7 @@ def predict_batch(customers: list[CustomerData]):
 # ── POST /explain — SHAP explanation ─────────────────────────────────────────
 @app.post("/explain", response_model=ExplainResponse, tags=["Explanation"])
 def explain(customer: CustomerData):
+    check_models_loaded()
     """
     Returns top 5 SHAP features explaining the churn prediction.
     Shows which features pushed the score up or down.
