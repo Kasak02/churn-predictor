@@ -109,8 +109,8 @@ class CustomerData(BaseModel):
     StreamingMovies : int   = Field(0, ge=0, le=1)
     PaperlessBilling: int   = Field(0, ge=0, le=1)
 
-    class Config:
-        json_schema_extra = {
+    model_Config ={
+        "json_schema_extra" : {
             "example": {
                 "tenure"          : 3,
                 "MonthlyCharges"  : 89.10,
@@ -133,7 +133,7 @@ class CustomerData(BaseModel):
                 "PaperlessBilling": 1
             }
         }
-
+            }
 
 class PredictionResponse(BaseModel):
     """Response from /predict endpoint."""
@@ -188,7 +188,7 @@ def get_risk_level(prob: float) -> str:
 
 def preprocess_customer(customer: CustomerData) -> np.ndarray:
     """Convert CustomerData to preprocessed numpy array."""
-    df = pd.DataFrame([customer.dict()])
+    df = pd.DataFrame([customer.model_dump()])
     df = engineer_features(df)
     return preprocessor.transform(df)
 
