@@ -7,16 +7,19 @@
 *An end-to-end AI system that predicts customer churn, explains every prediction,*
 *and automatically generates personalised retention emails.*
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://kasak02-churn-predictor.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://churn-predictor-4j4exkmmyywrhbulwqsuuu.streamlit.app/)
 ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
-![XGBoost](https://img.shields.io/badge/XGBoost-2.x-orange?logo=xgboost)
+![XGBoost](https://img.shields.io/badge/XGBoost-3.x-orange)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.x-red?logo=streamlit)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.13x-green?logo=fastapi)
+![Docker](https://img.shields.io/badge/Docker-ready-blue?logo=docker)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-black?logo=github)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-**[🔗 Live Demo](https://kasak02-churn-predictor.streamlit.app)** &nbsp;|&nbsp;
-**[📓 Notebooks](notebooks/)** &nbsp;|&nbsp;
-**[📊 Model Card](reports/model_card.md)** &nbsp;|&nbsp;
-**[📁 Reports](reports/)**
+**[🔗 Live App](https://churn-predictor-4j4exkmmyywrhbulwqsuuu.streamlit.app/)** &nbsp;|&nbsp;
+**[⚡ Live API](https://churn-predictor-api-1re5.onrender.com)** &nbsp;|&nbsp;
+**[📖 API Docs](https://churn-predictor-api-1re5.onrender.com/docs)** &nbsp;|&nbsp;
+**[📁 GitHub](https://github.com/Kasak02/churn-predictor)**
 
 </div>
 
@@ -34,23 +37,32 @@ This project builds a complete, production-grade ML pipeline that:
 - 🔍 **Explains** every prediction using SHAP (not just a black-box score)
 - 📧 **Acts** by auto-generating personalised retention emails via Groq API + Llama 3.3
 - 📈 **Monitors** churn patterns through an interactive Plotly dashboard
+- ⚡ **Serves** predictions via a FastAPI REST API containerised with Docker
 
 ---
 
-## 🖥️ Live Application
+## 🖥️ Live Deployments
 
-<div align="center">
+| Service | URL | Description |
+|---------|-----|-------------|
+| 🔗 Streamlit App | [churn-predictor.streamlit.app](https://churn-predictor-4j4exkmmyywrhbulwqsuuu.streamlit.app/) | Interactive 4-tab web application |
+| ⚡ FastAPI | [churn-predictor-api.onrender.com](https://churn-predictor-api-1re5.onrender.com) | REST API health check |
+| 📖 API Docs | [/docs](https://churn-predictor-api-1re5.onrender.com/docs) | Interactive Swagger UI |
+| 📁 GitHub | [Kasak02/churn-predictor](https://github.com/Kasak02/churn-predictor) | Source code + notebooks |
+
+> **Note:** Render.com free tier sleeps after 15 min inactivity.
+> First request may take ~30 seconds to wake up.
+
+---
+
+## 🖥️ Application Tabs
 
 | Tab | Description |
 |-----|-------------|
 | 🔮 **Predict** | Upload customer CSV → churn probability per customer → risk ranking |
 | 🔍 **Explain** | SHAP waterfall plot → exactly why each customer got their score |
-| 📧 **Email** | Groq API + Llama 3.3 → personalised B2B retention email in 3 seconds |
+| 📧 **Email** | Groq API + Llama 3.3 → personalised B2B retention email in ~3 seconds |
 | 📈 **Dashboard** | Training analytics + live prediction analytics with Plotly |
-
-**👉 [Try the live app here](https://kasak02-churn-predictor.streamlit.app)**
-
-</div>
 
 ---
 
@@ -62,13 +74,13 @@ Raw Customer Data (CSV)
         ▼
 ┌─────────────────────┐
 │  Data Pipeline      │  pandas · feature engineering · SMOTE
-│  (Week 1)           │  7,043 customers · 20 features → 33 after OHE
+│                     │  7,043 customers · 20 features → 33 after OHE
 └────────┬────────────┘
          │
          ▼
 ┌─────────────────────┐
 │  ML Model           │  XGBoost + SMOTE · sklearn pipeline
-│  (Week 2)           │  ROC-AUC: 0.84 · F1 Churn: 0.62
+│                     │  ROC-AUC: 0.84 · F1 Churn: 0.62
 └────────┬────────────┘
          │
          ├──────────────────────────────────────┐
@@ -81,17 +93,44 @@ Raw Customer Data (CSV)
 └────────┬────────────┘              └─────────────────────┘
          │
          ▼
-┌─────────────────────┐
-│  Streamlit App      │  4 tabs · deployed on Streamlit Cloud
-│  (Week 3)           │  FastAPI + Docker coming Week 4
-└─────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│  Streamlit App (4 tabs) + FastAPI REST API               │
+│  Deployed: Streamlit Cloud + Docker + Render.com         │
+│  CI/CD: GitHub Actions (lint + pytest + auto-deploy)     │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+## ⚡ API Endpoints
+
+Base URL: `https://churn-predictor-api-1re5.onrender.com`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Health check |
+| GET | `/info` | Model metadata and metrics |
+| POST | `/predict` | Single customer churn prediction |
+| POST | `/predict/batch` | Batch prediction (up to 1,000 customers) |
+| POST | `/explain` | Top 5 SHAP features per customer |
+| GET | `/explain/global` | Global feature importance |
+
+**Quick test:**
+```bash
+curl -X POST "https://churn-predictor-api-1re5.onrender.com/predict" \
+  -H "Content-Type: application/json" \
+  -d '{"tenure": 3, "MonthlyCharges": 89.10, "TotalCharges": 267.30,
+       "Contract": "Month-to-month", "InternetService": "Fiber optic",
+       "PaymentMethod": "Electronic check", "gender": 0, "SeniorCitizen": 0,
+       "Partner": 0, "Dependents": 0, "PhoneService": 1, "MultipleLines": 0,
+       "OnlineSecurity": 0, "OnlineBackup": 0, "DeviceProtection": 0,
+       "TechSupport": 0, "StreamingTV": 0, "StreamingMovies": 0,
+       "PaperlessBilling": 1}'
 ```
 
 ---
 
 ## 🧪 Model Performance
-
-### All Models Compared
 
 | Model | Accuracy | F1 Churn | F1 Weighted | ROC-AUC |
 |-------|----------|----------|-------------|---------|
@@ -100,22 +139,14 @@ Raw Customer Data (CSV)
 | **XGBoost + SMOTE (final ✓)** | **best** | **best** | **best** | **best** |
 
 > **Primary metric: F1 on churn class** — accuracy is misleading due to
-> 26.5% class imbalance. ROC-AUC of 0.84 is in line with published
-> research benchmarks for this dataset (79–83% accuracy range).
-
-### Confusion Matrix (Final Model)
-
-```
-                  Predicted Retained   Predicted Churned
-Actual Retained        TN ✓                FP ✗
-Actual Churned         FN ✗ (costly!)      TP ✓
-```
+> 26.5% class imbalance. ROC-AUC of 0.84 is consistent with published
+> research benchmarks for this dataset.
 
 ---
 
 ## 🔍 SHAP Explainability
 
-Top 5 global churn drivers identified by SHAP TreeExplainer:
+Top 5 global churn drivers:
 
 | Rank | Feature | Mean SHAP | Business Insight |
 |------|---------|-----------|-----------------|
@@ -136,9 +167,10 @@ Top 5 global churn drivers identified by SHAP TreeExplainer:
 | **Explainability** | SHAP | Per-customer prediction explanations |
 | **LLM** | Groq API · Llama 3.3 70b | Retention email generation |
 | **App** | Streamlit · Plotly | Interactive web application |
-| **API** | FastAPI · uvicorn | REST endpoints — [Live API] (https://churn-predictor-api-1re5.onrender.com) |
-| **Deployment** | Streamlit Cloud · Docker · Render.com | Production deployment |
-| **CI/CD** | GitHub Actions | Automated testing and deployment |
+| **API** | FastAPI · uvicorn · Pydantic | REST endpoints with auto docs |
+| **Container** | Docker · docker-compose | Containerisation |
+| **Deployment** | Streamlit Cloud · Render.com | Production deployment |
+| **CI/CD** | GitHub Actions · pytest · flake8 | Automated testing + deployment |
 
 ---
 
@@ -147,39 +179,48 @@ Top 5 global churn drivers identified by SHAP TreeExplainer:
 ```
 churn-predictor/
 │
+├── 02_eda.ipynb                     # Exploratory data analysis
+├── 03_data_cleaning.ipynb           # Data cleaning pipeline
+├── 04_feature_engineering.ipynb     # Feature creation + engineering
+├── 05_model_training.ipynb          # XGBoost + SHAP training
+│
 ├── data/
 │   ├── raw/
-│   │   └── telco_churn.csv              # Original dataset (never modified)
+│   │   └── telco_churn.csv          # Original dataset (never modified)
 │   └── processed/
-│       ├── telco_churn_clean.csv        # After cleaning
-│       └── telco_churn_features.csv     # ML-ready with engineered features
-│
-|
-├── 02_eda.ipynb                         # Exploratory data analysis
-├── 03_data_cleaning.ipynb               # Data cleaning pipeline
-├── 04_feature_engineering.ipynb         # Feature creation
-├── 05_model_training.ipynb              # XGBoost + SHAP
+│       ├── telco_churn_clean.csv    # After cleaning
+│       └── telco_churn_features.csv # ML-ready with engineered features
 │
 ├── models/
-│   ├── final_model.pkl                  # XGBoost + SMOTE (best model)
-│   ├── preprocessor.pkl                 # sklearn ColumnTransformer
-│   ├── shap_explainer.pkl               # SHAP TreeExplainer
-│   └── feature_names.json               # Feature names for SHAP
+│   ├── final_model.pkl              # XGBoost + SMOTE (best model)
+│   ├── preprocessor.pkl             # sklearn ColumnTransformer
+│   ├── shap_explainer.pkl           # SHAP TreeExplainer
+│   └── feature_names.json           # Feature names for SHAP
 │
 ├── src/
-│   ├── shap_utils.py                    # SHAP explanation helper
-│   └── email_generator.py               # Groq API email generation
+│   ├── shap_utils.py                # SHAP explanation helper
+│   └── email_generator.py           # Groq API email generation
 │
 ├── app/
-│   └── streamlit_app.py                 # Complete 4-tab Streamlit app
+│   └── streamlit_app.py             # Complete 4-tab Streamlit app
+│
+├── api/
+│   └── main.py                      # FastAPI endpoints
+│
+├── tests/
+│   └── test_api.py                  # 9 pytest unit tests
 │
 ├── reports/
-│   ├── model_card.md                    # Full model documentation
-│   ├── model_results.csv                # All model metrics
-│   ├── shap_feature_importance.csv      # SHAP rankings
-│   └── [charts and notes]              # EDA + SHAP visualisations
+│   ├── model_card.md                # Full model documentation
+│   ├── model_results.csv            # All model metrics
+│   └── shap_feature_importance.csv  # SHAP rankings
 │
-├── Dockerfile                           # Week 4
+├── .github/
+│   └── workflows/
+│       └── ci.yml                   # GitHub Actions CI/CD
+│
+├── Dockerfile
+├── docker-compose.yml
 ├── requirements.txt
 └── README.md
 ```
@@ -195,11 +236,11 @@ churn-predictor/
 ### Setup
 
 ```bash
-# 1. Clone the repository
+# 1. Clone
 git clone https://github.com/Kasak02/churn-predictor.git
 cd churn-predictor
 
-# 2. Create virtual environment
+# 2. Virtual environment
 python -m venv venv
 venv\Scripts\activate        # Windows
 # source venv/bin/activate   # Mac/Linux
@@ -207,14 +248,22 @@ venv\Scripts\activate        # Windows
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Add your Groq API key
-echo GROQ_API_KEY= your_key_here > .env
+# 4. Add Groq API key
+echo GROQ_API_KEY=your_key_here > .env
 
-# 5. Run the app
+# 5. Run Streamlit app
 streamlit run app/streamlit_app.py
-```
 
-App opens at `http://localhost:8501`
+# 6. Run FastAPI (separate terminal)
+uvicorn api.main:app --reload
+
+# 7. Run with Docker
+docker build -t churn-predictor .
+docker run -p 8000:8000 churn-predictor
+
+# 8. Run tests
+python -m pytest tests/ -v
+```
 
 ---
 
@@ -222,7 +271,7 @@ App opens at `http://localhost:8501`
 
 | Field | Details |
 |-------|---------|
-| Source | [IBM Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) |
+| Source | [IBM Telco Customer Churn — Kaggle](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) |
 | Rows | 7,043 customers |
 | Features | 21 raw → 33 after preprocessing |
 | Target | Churn (Yes/No) — 26.5% churn rate |
@@ -235,19 +284,15 @@ App opens at `http://localhost:8501`
 
 - [x] **Week 1** — EDA, data cleaning, feature engineering
 - [x] **Week 2** — XGBoost training, SMOTE, SHAP explainability
-- [x] **Week 3** — Streamlit app, Groq email generation, deployment
-- [ ] **Week 4** — FastAPI REST API, Docker, GitHub Actions CI/CD
+- [x] **Week 3** — Streamlit app, Groq email generation, Streamlit Cloud deployment
+- [x] **Week 4** — FastAPI REST API, Docker, Render.com, GitHub Actions CI/CD
 
 ---
-
 
 ## 👩‍💻 About
 
 **Kasak Bhatia **
-B.Tech — Artificial Intelligence & Data Science (3rd Year)
-
-
-*Targeting Data Scientist roles in IT Operations and SaaS domains*
+B.Tech — Artificial Intelligence & Data Science Student
 
 [![GitHub](https://img.shields.io/badge/GitHub-Kasak02-black?logo=github)](https://github.com/Kasak02)
 
