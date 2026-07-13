@@ -87,9 +87,9 @@ Raw Customer Data (CSV)
          ▼                                      ▼
 ┌─────────────────────┐              ┌─────────────────────┐
 │  SHAP Explainer     │              │  Groq API           │
-│  TreeExplainer      │──────────▶  │  Llama 3.3 70b      │
-│  Per-customer       │  top risk   │  Retention email    │
-│  waterfall plots    │  factors    │  generation         │
+│  TreeExplainer      │─────────▶   │  Llama 3.3 70b       │   
+│  Per-customer       │  top risk    │  Retention email    │ 
+│  waterfall plots    │  factors     │  generation         │
 └────────┬────────────┘              └─────────────────────┘
          │
          ▼
